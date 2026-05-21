@@ -52,7 +52,10 @@ export function useTimer() {
   // 起動時に前回のプリセット選択を復元
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY).then((val) => {
-      if (val) dispatch({ type: 'SET_TOTAL_SECONDS', seconds: parseInt(val, 10) });
+      if (val) {
+        const seconds = parseInt(val, 10);
+        if (Number.isFinite(seconds)) dispatch({ type: 'SET_TOTAL_SECONDS', seconds });
+      }
     });
   }, []);
 
@@ -86,7 +89,7 @@ export function useTimer() {
   }, []);
 
   const savePreset = useCallback((seconds: number) => {
-    AsyncStorage.setItem(STORAGE_KEY, String(seconds));
+    AsyncStorage.setItem(STORAGE_KEY, String(seconds)).catch(() => {});
     dispatch({ type: 'SET_TOTAL_SECONDS', seconds });
   }, []);
 
