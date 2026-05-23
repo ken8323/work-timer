@@ -1,35 +1,18 @@
-import React, { useEffect } from 'react';
-import Animated, {
-  useSharedValue,
-  useAnimatedProps,
-  withTiming,
-} from 'react-native-reanimated';
+import React from 'react';
 import { G, Line, Circle } from 'react-native-svg';
 
-const AnimatedG = Animated.createAnimatedComponent(G);
-
 interface ClockHandProps {
-  remainingRatio: number; // 0.0 (done) → 1.0 (full)
+  remainingRatio: number;
   cx: number;
   cy: number;
   length: number;
 }
 
 export function ClockHand({ remainingRatio, cx, cy, length }: ClockHandProps) {
-  const rotation = useSharedValue(remainingRatio * 360);
-
-  useEffect(() => {
-    rotation.value = withTiming(remainingRatio * 360, { duration: 500 });
-  }, [remainingRatio]);
-
-  const animatedProps = useAnimatedProps(() => ({
-    rotation: rotation.value,
-    originX: cx,
-    originY: cy,
-  }));
+  const angle = remainingRatio * 360;
 
   return (
-    <AnimatedG animatedProps={animatedProps}>
+    <G rotation={angle} originX={cx} originY={cy}>
       <Line
         x1={cx}
         y1={cy}
@@ -40,6 +23,6 @@ export function ClockHand({ remainingRatio, cx, cy, length }: ClockHandProps) {
         strokeLinecap="round"
       />
       <Circle cx={cx} cy={cy} r={7} fill="#f97316" />
-    </AnimatedG>
+    </G>
   );
 }
