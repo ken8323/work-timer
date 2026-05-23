@@ -37,7 +37,7 @@ interface AnalogClockProps {
 }
 
 export function AnalogClock({ totalSeconds, remainingSeconds, isFinished = false, size = 300 }: AnalogClockProps) {
-  const remainingRatio = totalSeconds > 0 ? remainingSeconds / totalSeconds : 0;
+  const remainingRatio = Math.min(1, remainingSeconds / 3600);
   const arcPath = buildArcPath(remainingRatio, CX, CY, TRACK_RADIUS);
   const arcColor = isFinished ? '#ffffff' : '#f97316';
 
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
   },
   timeText: {
     position: 'absolute',
-    bottom: 55,
+    bottom: 75,
     color: Colors.textSecondary,
     fontSize: FontSize.xl,
     fontVariant: ['tabular-nums'],
