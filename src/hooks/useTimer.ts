@@ -1,5 +1,6 @@
 import { useReducer, useEffect, useRef, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { timerReducer, initialState, TimerMode } from './timerReducer';
 import { playFinishNotification } from '../utils/notification';
 
@@ -48,6 +49,15 @@ export function useTimer() {
       notifiedRef.current = false;
     }
   }, [state.status, state.mode]);
+
+  // running 中は画面をスリープさせない
+  useEffect(() => {
+    if (state.status === 'running') {
+      activateKeepAwakeAsync();
+    } else {
+      deactivateKeepAwake();
+    }
+  }, [state.status]);
 
   // 起動時に前回のプリセット選択を復元
   useEffect(() => {
