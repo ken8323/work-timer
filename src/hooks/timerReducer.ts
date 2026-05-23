@@ -46,8 +46,22 @@ export const initialState: TimerState = {
 
 export function timerReducer(state: TimerState, action: TimerAction): TimerState {
   switch (action.type) {
-    case 'SET_MODE':
+    case 'SET_MODE': {
+      if (action.mode === 'pomodoro') {
+        const phaseSeconds =
+          state.pomodoroPhase === 'work' ? state.pomodoroWorkSeconds :
+          state.pomodoroPhase === 'break' ? state.pomodoroBreakSeconds :
+          state.pomodoroLongBreakSeconds;
+        return {
+          ...state,
+          mode: action.mode,
+          status: 'idle',
+          totalSeconds: phaseSeconds,
+          remainingSeconds: phaseSeconds,
+        };
+      }
       return { ...state, mode: action.mode, status: 'idle' };
+    }
 
     case 'SET_TOTAL_SECONDS':
       return { ...state, totalSeconds: action.seconds, remainingSeconds: action.seconds };
@@ -92,12 +106,36 @@ export function timerReducer(state: TimerState, action: TimerAction): TimerState
       };
 
     case 'SET_POMODORO_WORK':
+      if (state.pomodoroPhase === 'work' && state.status === 'idle') {
+        return {
+          ...state,
+          pomodoroWorkSeconds: action.seconds,
+          totalSeconds: action.seconds,
+          remainingSeconds: action.seconds,
+        };
+      }
       return { ...state, pomodoroWorkSeconds: action.seconds };
 
     case 'SET_POMODORO_BREAK':
+      if (state.pomodoroPhase === 'break' && state.status === 'idle') {
+        return {
+          ...state,
+          pomodoroBreakSeconds: action.seconds,
+          totalSeconds: action.seconds,
+          remainingSeconds: action.seconds,
+        };
+      }
       return { ...state, pomodoroBreakSeconds: action.seconds };
 
     case 'SET_POMODORO_LONG_BREAK':
+      if (state.pomodoroPhase === 'long_break' && state.status === 'idle') {
+        return {
+          ...state,
+          pomodoroLongBreakSeconds: action.seconds,
+          totalSeconds: action.seconds,
+          remainingSeconds: action.seconds,
+        };
+      }
       return { ...state, pomodoroLongBreakSeconds: action.seconds };
 
     case 'NEXT_POMODORO_PHASE': {
