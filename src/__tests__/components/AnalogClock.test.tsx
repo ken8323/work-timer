@@ -23,4 +23,14 @@ describe('AnalogClock', () => {
     );
     expect(getByText('00:59')).toBeTruthy();
   });
+
+  it('時計盤に15・30・45・60の分数ラベルを表示する', () => {
+    const { getByText } = render(
+      <AnalogClock totalSeconds={1500} remainingSeconds={1500} />
+    );
+    expect(getByText('15')).toBeTruthy();
+    expect(getByText('30')).toBeTruthy();
+    expect(getByText('45')).toBeTruthy();
+    expect(getByText('60')).toBeTruthy();
+  });
 });

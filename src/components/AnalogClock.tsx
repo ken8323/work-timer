@@ -86,6 +86,10 @@ export function AnalogClock({ totalSeconds, remainingSeconds, isFinished = false
           length={90}
         />
       </Svg>
+      <Text style={styles.labelTop}>60</Text>
+      <Text style={styles.labelRight}>15</Text>
+      <Text style={styles.labelBottom}>30</Text>
+      <Text style={styles.labelLeft}>45</Text>
       <Text style={styles.timeText}>{formatTime(remainingSeconds)}</Text>
     </View>
   );
@@ -104,4 +108,8 @@ const styles = StyleSheet.create({
     fontVariant: ['tabular-nums'],
     letterSpacing: 2,
   },
+  labelTop:    { position: 'absolute', top: 6,  left: 0, right: 0, textAlign: 'center', color: Colors.textDisabled, fontSize: 11 },
+  labelRight:  { position: 'absolute', top: '48%', right: 6,  color: Colors.textDisabled, fontSize: 11 },
+  labelBottom: { position: 'absolute', bottom: 6, left: 0, right: 0, textAlign: 'center', color: Colors.textDisabled, fontSize: 11 },
+  labelLeft:   { position: 'absolute', top: '48%', left: 6,  color: Colors.textDisabled, fontSize: 11 },
 });
