@@ -4,7 +4,9 @@ jest.mock('react-native-reanimated', () =>
 
 jest.mock('expo-haptics', () => ({
   notificationAsync: jest.fn().mockResolvedValue(undefined),
-  NotificationFeedbackType: { Success: 'success' },
+  impactAsync: jest.fn().mockResolvedValue(undefined),
+  NotificationFeedbackType: { Success: 'success', Warning: 'warning' },
+  ImpactFeedbackStyle: { Light: 'light', Medium: 'medium', Heavy: 'heavy' },
 }));
 
 jest.mock('expo-av', () => ({

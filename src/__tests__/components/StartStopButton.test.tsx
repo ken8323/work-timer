@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
+import * as Haptics from 'expo-haptics';
 import { StartStopButton } from '../../components/StartStopButton';
 
 describe('StartStopButton', () => {
@@ -47,5 +48,37 @@ describe('StartStopButton', () => {
     );
     fireEvent.press(getByText('一時停止'));
     expect(onPause).toHaveBeenCalled();
+  });
+
+  it('スタート時に ImpactFeedbackStyle.Medium のハプティクスが発火する', () => {
+    const { getByText } = render(
+      <StartStopButton status="idle" onStart={jest.fn()} onPause={jest.fn()} onResume={jest.fn()} onReset={jest.fn()} />
+    );
+    fireEvent.press(getByText('スタート'));
+    expect(Haptics.impactAsync).toHaveBeenCalledWith(Haptics.ImpactFeedbackStyle.Medium);
+  });
+
+  it('一時停止時に ImpactFeedbackStyle.Light のハプティクスが発火する', () => {
+    const { getByText } = render(
+      <StartStopButton status="running" onStart={jest.fn()} onPause={jest.fn()} onResume={jest.fn()} onReset={jest.fn()} />
+    );
+    fireEvent.press(getByText('一時停止'));
+    expect(Haptics.impactAsync).toHaveBeenCalledWith(Haptics.ImpactFeedbackStyle.Light);
+  });
+
+  it('再開時に ImpactFeedbackStyle.Medium のハプティクスが発火する', () => {
+    const { getByText } = render(
+      <StartStopButton status="paused" onStart={jest.fn()} onPause={jest.fn()} onResume={jest.fn()} onReset={jest.fn()} />
+    );
+    fireEvent.press(getByText('再開'));
+    expect(Haptics.impactAsync).toHaveBeenCalledWith(Haptics.ImpactFeedbackStyle.Medium);
+  });
+
+  it('長押しリセット時に NotificationFeedbackType.Warning のハプティクスが発火する', () => {
+    const { getByText } = render(
+      <StartStopButton status="running" onStart={jest.fn()} onPause={jest.fn()} onResume={jest.fn()} onReset={jest.fn()} />
+    );
+    fireEvent(getByText('一時停止'), 'longPress');
+    expect(Haptics.notificationAsync).toHaveBeenCalledWith(Haptics.NotificationFeedbackType.Warning);
   });
 });

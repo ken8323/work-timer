@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { TimerStatus } from '../hooks/timerReducer';
 import { Colors, Spacing, FontSize } from '../constants/theme';
 
@@ -22,10 +23,19 @@ export function StartStopButton({
 }: StartStopButtonProps) {
   const config: ButtonConfig = (() => {
     switch (status) {
-      case 'running': return { label: '一時停止', action: onPause };
-      case 'paused':  return { label: '再開',     action: onResume };
-      case 'finished':return { label: 'もう一度', action: onReset };
-      default:        return { label: 'スタート', action: onStart };
+      case 'running': return {
+        label: '一時停止',
+        action: () => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onPause(); },
+      };
+      case 'paused': return {
+        label: '再開',
+        action: () => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onResume(); },
+      };
+      case 'finished': return { label: 'もう一度', action: onReset };
+      default: return {
+        label: 'スタート',
+        action: () => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onStart(); },
+      };
     }
   })();
 
@@ -35,7 +45,7 @@ export function StartStopButton({
     <TouchableOpacity
       style={[styles.button, isPrimary ? styles.primaryButton : styles.secondaryButton]}
       onPress={config.action}
-      onLongPress={onReset}
+      onLongPress={() => { Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning); onReset(); }}
       delayLongPress={500}
       activeOpacity={0.8}
     >
