@@ -41,18 +41,17 @@ export function AnalogClock({ totalSeconds, remainingSeconds, isFinished = false
   const arcPath = buildArcPath(remainingRatio, CX, CY, TRACK_RADIUS);
   const arcColor = isFinished ? '#ffffff' : '#f97316';
 
+  // 12/3/6/9時位置（isMajor）は数字ラベルで代替するため目盛りを描画しない
   const ticks = Array.from({ length: 12 }, (_, i) => {
     const angle = (i / 12) * 2 * Math.PI;
-    const isMajor = i % 3 === 0;
-    const inner = isMajor ? TICK_INNER_MAJOR : TICK_INNER_MINOR;
+    if (i % 3 === 0) return null;
     return {
       x1: CX + TICK_OUTER * Math.sin(angle),
       y1: CY - TICK_OUTER * Math.cos(angle),
-      x2: CX + inner * Math.sin(angle),
-      y2: CY - inner * Math.cos(angle),
-      isMajor,
+      x2: CX + TICK_INNER_MINOR * Math.sin(angle),
+      y2: CY - TICK_INNER_MINOR * Math.cos(angle),
     };
-  });
+  }).filter(Boolean) as { x1: number; y1: number; x2: number; y2: number }[];
 
   return (
     <View style={[styles.container, { width: size, height: size }]}>
@@ -75,8 +74,8 @@ export function AnalogClock({ totalSeconds, remainingSeconds, isFinished = false
             y1={tick.y1}
             x2={tick.x2}
             y2={tick.y2}
-            stroke={tick.isMajor ? '#475569' : '#334155'}
-            strokeWidth={tick.isMajor ? 2 : 1}
+            stroke="#334155"
+            strokeWidth={1}
           />
         ))}
         <ClockHand
@@ -86,6 +85,10 @@ export function AnalogClock({ totalSeconds, remainingSeconds, isFinished = false
           length={90}
         />
       </Svg>
+      <Text style={styles.labelTop}>60</Text>
+      <Text style={styles.labelRight}>15</Text>
+      <Text style={styles.labelBottom}>30</Text>
+      <Text style={styles.labelLeft}>45</Text>
       <Text style={styles.timeText}>{formatTime(remainingSeconds)}</Text>
     </View>
   );
@@ -104,4 +107,8 @@ const styles = StyleSheet.create({
     fontVariant: ['tabular-nums'],
     letterSpacing: 2,
   },
+  labelTop:    { position: 'absolute', top: 9,   left: 0, right: 0, textAlign: 'center', color: Colors.textDisabled, fontSize: 11 },
+  labelRight:  { position: 'absolute', top: 143, right: 7,            color: Colors.textDisabled, fontSize: 11 },
+  labelBottom: { position: 'absolute', bottom: 9, left: 0, right: 0, textAlign: 'center', color: Colors.textDisabled, fontSize: 11 },
+  labelLeft:   { position: 'absolute', top: 143, left: 7,             color: Colors.textDisabled, fontSize: 11 },
 });
