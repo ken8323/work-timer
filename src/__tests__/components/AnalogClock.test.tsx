@@ -33,4 +33,25 @@ describe('AnalogClock', () => {
     expect(getByText('45')).toBeTruthy();
     expect(getByText('60')).toBeTruthy();
   });
+
+  it('残り10%未満のとき警告状態になる', () => {
+    const { getByTestId } = render(
+      <AnalogClock totalSeconds={100} remainingSeconds={9} />
+    );
+    expect(getByTestId('clock-warning')).toBeTruthy();
+  });
+
+  it('残り10%以上のとき通常状態', () => {
+    const { getByTestId } = render(
+      <AnalogClock totalSeconds={100} remainingSeconds={10} />
+    );
+    expect(getByTestId('clock-normal')).toBeTruthy();
+  });
+
+  it('残り0秒のとき警告状態にならない（finished扱い）', () => {
+    const { getByTestId } = render(
+      <AnalogClock totalSeconds={100} remainingSeconds={0} />
+    );
+    expect(getByTestId('clock-normal')).toBeTruthy();
+  });
 });

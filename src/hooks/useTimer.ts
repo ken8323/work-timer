@@ -1,6 +1,7 @@
 import { useReducer, useEffect, useRef, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
+import * as Haptics from 'expo-haptics';
 import { timerReducer, initialState, TimerMode } from './timerReducer';
 import { playFinishNotification } from '../utils/notification';
 
@@ -10,6 +11,7 @@ export function useTimer() {
   const [state, dispatch] = useReducer(timerReducer, initialState);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const notifiedRef = useRef(false);
+  const warnedRef = useRef(false);
 
   // タイマードライバー
   useEffect(() => {
@@ -49,6 +51,20 @@ export function useTimer() {
       notifiedRef.current = false;
     }
   }, [state.status, state.mode]);
+
+  // 残り10%でハプティクス警告を1回発火
+  useEffect(() => {
+    if (state.status === 'running' && state.totalSeconds > 0) {
+      const isWarning = state.remainingSeconds > 0 && state.remainingSeconds / state.totalSeconds < 0.1;
+      if (isWarning && !warnedRef.current) {
+        warnedRef.current = true;
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+      if (!isWarning) warnedRef.current = false;
+    } else {
+      warnedRef.current = false;
+    }
+  }, [state.remainingSeconds, state.totalSeconds, state.status]);
 
   // running 中は画面をスリープさせない
   useEffect(() => {

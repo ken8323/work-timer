@@ -39,7 +39,8 @@ interface AnalogClockProps {
 export function AnalogClock({ totalSeconds, remainingSeconds, isFinished = false, size = 300 }: AnalogClockProps) {
   const remainingRatio = Math.min(1, remainingSeconds / 3600);
   const arcPath = buildArcPath(remainingRatio, CX, CY, TRACK_RADIUS);
-  const arcColor = isFinished ? '#ffffff' : '#f97316';
+  const isWarning = totalSeconds > 0 && remainingSeconds > 0 && remainingSeconds / totalSeconds < 0.1;
+  const arcColor = isFinished ? '#ffffff' : isWarning ? '#ef4444' : '#f97316';
 
   // 12/3/6/9時位置（isMajor）は数字ラベルで代替するため目盛りを描画しない
   const ticks = Array.from({ length: 12 }, (_, i) => {
@@ -54,7 +55,7 @@ export function AnalogClock({ totalSeconds, remainingSeconds, isFinished = false
   }).filter(Boolean) as { x1: number; y1: number; x2: number; y2: number }[];
 
   return (
-    <View style={[styles.container, { width: size, height: size }]}>
+    <View testID={isWarning ? 'clock-warning' : 'clock-normal'} style={[styles.container, { width: size, height: size }]}>
       <Svg width={size} height={size} viewBox="0 0 300 300">
         <Circle cx={CX} cy={CY} r={148} fill="#0f172a" stroke="#334155" strokeWidth={1} />
         <Circle cx={CX} cy={CY} r={TRACK_RADIUS} fill="none" stroke="#1e293b" strokeWidth={14} />
